@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Tomasos Pizzeria</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <nav>
+        
+        <ul>
+            <li class="left-navigation"><a asp-area="" asp-controller="Home" asp-action="HomePage">Tomasos Pizzeria</a></li>
+            <li class="left-navigation"><a asp-area="" asp-controller="Home" asp-action="MenuPage">Meny</a></li>
+            <li class="right-navigation"><a asp-area="" asp-controller="Home" asp-action="RegisterPage">Registrera</a></li>
+            <li class="right-navigation"><a asp-area="" asp-controller="Home" asp-action="LoginPage">Logga in</a></li>
+        </ul>
+    </nav>
+    <div class="container container-views">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" asp-append-version="true"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
