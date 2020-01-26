@@ -1,5 +1,6 @@
-﻿@{
-    ViewData["Title"] = "Var vänlig logga in";
+﻿@model TomasosPizzeriaUppgift.Models.Kund
+@{
+
 }
 <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
 <link href="~/css/inloggPageStyle.css" rel="stylesheet" type="text/css" asp-append-version="true" />
@@ -7,9 +8,10 @@
 <div class="text-center">
     
     <form class="login" asp-controller="Home" asp-action="UserLogginValidation" method="post">
-        <h2>@ViewData["Title"]</h2>
-        <input type="text" placeholder="Användarnamn">
-        <input type="password" placeholder="Lösenord">
+        <h2>@ViewBag.Message</h2>
+        
+        <input type="text" placeholder="Användarnamn" asp-for="@Model.AnvandarNamn">
+        <input type="password" placeholder="Lösenord" asp-for="@Model.Losenord">
         <input class="button" type="submit" value="Logga in" />
     </form>
 

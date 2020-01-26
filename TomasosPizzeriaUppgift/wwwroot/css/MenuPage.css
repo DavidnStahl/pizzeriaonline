@@ -32,16 +32,23 @@ h4 {
     margin-top: 10%;
 }
 #customerbasket {
-    position: fixed;
     color: red;
     font: bold;
-    width: 300px;
-    margin-left: 35%;
-    height: 500px;
+    width: 50%;
+    
+    height: 100%;
     background-color: ghostwhite;
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
     border-radius: 20px;
     border-style: solid;
     border-color: red;
+}
+.table-css{
+    color: red;
+}
+
+.table-css a {
+    color: white;
+    text-decoration: none;
 }
