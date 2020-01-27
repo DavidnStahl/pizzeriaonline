@@ -92,7 +92,6 @@ namespace TomasosPizzeriaUppgift.Controllers
             }
             else
             {
-                ViewBag.Message = "Användarnamn upptaget";
                 return View(nameof(CustomerInfoPage));
             }
         }
