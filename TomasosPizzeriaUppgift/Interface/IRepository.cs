@@ -14,5 +14,9 @@ namespace TomasosPizzeriaUppgift.Interface
         void SaveUser(Kund user);
         Kund GetUuserId(Kund customer);
         Matratt GetMatratterToCustomerbasket(int id);
+        void SaveOrder(List<Matratt> matratter, int userid);
+        int GetTotalPayment(List<Matratt> matratter);
+
+        void SaveBestallningMatratter(List<Matratt> matratter);
     }
 }

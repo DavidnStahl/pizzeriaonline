@@ -26,12 +26,7 @@ namespace TomasosPizzeriaUppgift.Controllers
             var id = Convert.ToInt32(Request.Cookies["cookie_customer"]);
             if (id != 0)
             {
-                var jsonget = Request.Cookies["cookie_matratter"];
-                var matratteradded = new List<Matratt>();
-                if (jsonget != null)
-                {
-                    matratteradded = JsonConvert.DeserializeObject<List<Matratt>>(jsonget);
-                }
+                var matratteradded = GetMatratterCacheList(id, "2");
                 matratteradded.Add(model.matratt);
                 model.Matratteradded = matratteradded;
                 return View(model);
@@ -96,34 +91,67 @@ namespace TomasosPizzeriaUppgift.Controllers
                 return View(nameof(LoginPage));
             };
         }
-        public ActionResult RemoveItemCustomerBasket(int id)
+
+        public ActionResult RemoveItemCustomerBasket(int id, int count)
         {
-            return View();
+            var matratteradded = GetMatratterCacheList(id,"2");
+            matratteradded.RemoveAt(count);
+            var menumodel = SetMatratterCacheList(matratteradded);
+            return PartialView("MenuPage", menumodel); 
         }
 
         public ActionResult CustomerBasket(int id)
         {
-            var model = Services.Services.Instance.GetMatratterById(id);
+            var matratteradded = GetMatratterCacheList(id,"1");
+            var menumodel = SetMatratterCacheList(matratteradded);
+            return PartialView("MenuPage", menumodel);
+        }
+        public ActionResult PaymentLoggin()
+        {
+            ViewBag.Message = "För att betala logga in";
+            return View();
+        }
+        [HttpPost]
+        public ActionResult PaymentLogginValidation(Kund customer)
+        {
+            var cust = Services.Services.Instance.GetUuserId(customer);
+            var cacheid = GetCustomerCache();
+            if(cacheid == cust.KundId)
+            {
+                return RedirectToAction("PayPage");
+            }
+            else
+            {
+                ViewBag.Message = "Fel inlogg försök igen";
+                return View(nameof(PaymentLoggin));
+            };
+        }
+        public ActionResult PayPage()
+        {
             var jsonget = Request.Cookies["cookie_matratter"];
             var matratteradded = new List<Matratt>();
-            if(jsonget != null)
+            if (jsonget != null)
             {
                 matratteradded = JsonConvert.DeserializeObject<List<Matratt>>(jsonget);
             }
-            matratteradded.Add(model);
-            
-            string json = JsonConvert.SerializeObject(matratteradded, Formatting.Indented);
-            CookieOptions options = new CookieOptions();
-            options.Expires = DateTime.Now.AddMinutes(15);
-            options.HttpOnly = true;
-            Response.Cookies.Append("cookie_matratter", json, options);
-
-            var menumodel = Services.Services.Instance.GetMenuInfo();
-            menumodel.Matratteradded = matratteradded;
-
-            return PartialView("MenuPage", menumodel);
+            var model = new MenuPage();
+            model.Matratteradded = matratteradded;
+            return View(model);
         }
-        
+        public ActionResult PayUser()
+        {
+            var userid = GetCustomerCache();
+            var jsonget = Request.Cookies["cookie_matratter"];
+            var matratteradded = new List<Matratt>();
+            if (jsonget != null)
+            {
+                matratteradded = JsonConvert.DeserializeObject<List<Matratt>>(jsonget);
+            }
+            Services.Services.Instance.UserPay(matratteradded, userid);
+            return View();
+        }
+
+
         public int GetCustomerCache()
         {
             var id = Convert.ToInt32(Request.Cookies["cookie_customer"]);
@@ -139,6 +167,33 @@ namespace TomasosPizzeriaUppgift.Controllers
             options.Expires = DateTime.Now.AddMinutes(10);
             options.HttpOnly = true;
             Response.Cookies.Append("cookie_customer", kund.KundId.ToString(), options);
+        }
+        public List<Matratt> GetMatratterCacheList(int id, string options)
+        {
+            var model = Services.Services.Instance.GetMatratterById(id);
+            var jsonget = Request.Cookies["cookie_matratter"];
+            var matratteradded = new List<Matratt>();
+            if (jsonget != null)
+            {
+                matratteradded = JsonConvert.DeserializeObject<List<Matratt>>(jsonget);
+            }
+            if(options == "1")
+            {
+                matratteradded.Add(model);
+            }
+            return matratteradded;
+        }
+        public MenuPage SetMatratterCacheList(List<Matratt> matratteradded)
+        {
+            string json = JsonConvert.SerializeObject(matratteradded, Formatting.Indented);
+            CookieOptions options = new CookieOptions();
+            options.Expires = DateTime.Now.AddMinutes(1);
+            options.HttpOnly = true;
+            Response.Cookies.Append("cookie_matratter", json, options);
+
+            var menumodel = Services.Services.Instance.GetMenuInfo();
+            menumodel.Matratteradded = matratteradded;
+            return menumodel;
         }
 
 

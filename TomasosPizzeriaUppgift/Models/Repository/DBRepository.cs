@@ -62,5 +62,84 @@ namespace TomasosPizzeriaUppgift.Models.Repository
             return model;
         }
 
+        public void SaveOrder(List<Matratt> matratter, int userid)
+        {
+            var customer = GetById(userid);
+            var totalmoney = GetTotalPayment(matratter);
+            var bestallning = new Bestallning()
+            {
+                BestallningDatum = DateTime.Now,
+                KundId = customer.KundId,
+                Totalbelopp = totalmoney,
+                Levererad = false
+            };
+
+
+            using (TomasosContext db = new TomasosContext())
+            {
+                db.Add(bestallning);
+                db.SaveChanges();
+            }
+            SaveBestallningMatratter(matratter);
+
+        }
+
+        public void SaveBestallningMatratter(List<Matratt> matratter)
+        {
+            var result = matratter.GroupBy(item => item)
+                      .Select(item => new
+                      {
+                          Name = item.Key,
+                          Count = item.Count()
+                      })
+                      .ToList();
+
+            
+            using (TomasosContext db = new TomasosContext())
+            {
+                var listbestallning = db.Bestallning.OrderByDescending(r => r.BestallningDatum).ToList();
+                var bestallningsmatrattlista = new List<BestallningMatratt>();
+                var id = 0;
+                var first = 0;
+                var count = 0;
+                matratter.OrderBy(r => r.MatrattNamn).ToList();
+                var best = new BestallningMatratt();
+                for(var i = 0; i < matratter.Count; i++)
+                {
+                    
+                    if(id != matratter[i].MatrattId)
+                    {
+                        first++;
+                        id = matratter[i].MatrattId;
+                        best.BestallningId = listbestallning[0].BestallningId;
+                        best.MatrattId = matratter[i].MatrattId;
+                        best.Antal = 1;
+                        bestallningsmatrattlista.Add(best);
+
+                    }
+                    else if(id == matratter[i].MatrattId)
+                    {
+                        count = first - 1;
+                        bestallningsmatrattlista[count].Antal++;
+
+                    }
+
+                    
+                }
+                db.AddRange(bestallningsmatrattlista);
+                db.SaveChanges();
+            }
+        }
+
+        public int GetTotalPayment(List<Matratt> matratter)
+        {
+            var totalmoney = 0;
+            foreach (var matratt in matratter)
+            {
+                totalmoney += matratt.Pris;
+            }
+            return totalmoney;
+        }
     }
+
 }

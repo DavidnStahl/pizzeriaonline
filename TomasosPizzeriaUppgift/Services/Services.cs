@@ -76,6 +76,11 @@ namespace TomasosPizzeriaUppgift.Services
         {
             return _repository.GetMatratterToCustomerbasket(id);
         }
+        public void UserPay(List<Matratt> matratter,int userid)
+        {
+            _repository.SaveOrder(matratter, userid);
+
+        } 
 
     }
 }

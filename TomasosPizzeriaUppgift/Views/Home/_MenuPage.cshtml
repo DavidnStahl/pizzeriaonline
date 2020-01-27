@@ -2,9 +2,12 @@
 
 @{
     var totalpris = 0;
+    var itemcount = 0;
+
+
 }
 
-<table class="table table-borderless table-css">
+<table id="updatetable" class="table table-borderless table-css">
     <thead>
         <tr>
 
@@ -16,29 +19,27 @@
         @foreach (var item in Model.Matratteradded)
         {
 
+
             totalpris += item.Pris;
+           
             <tr>
 
                 <td>@item.MatrattNamn</td>
                 @if (item.Pris != 0)
                 {
                     <td>@item.Pris</td>
-                    <td class="btn .btn-sm btn-danger">@Html.ActionLink("Ångra", "RemoveItemCustomerBasket", "Home", new { id = item.MatrattId }, null)</td>
+                    <td type="button" class="btn btn-danger text-white">
+                        @Html.ActionLink("Remove", "RemoveItemCustomerBasket", "Home", new { id = item.MatrattId, count = itemcount }, null)
+                    </td>
                 }
 
-
-
-
             </tr>
-
+            itemcount++;
 
         }
 
     </tbody>
 </table>
-
-
-
 
 <br />
 
@@ -55,29 +56,26 @@
             </tr>
         </thead>
         <tbody>
-           
-                <tr>
+            <tr>
+                <td>
 
-                    
-                        <td>
+                    <label>Totalpris: @totalpris Kr</label>
+                </td>
+                <td class="btn .btn-sm btn-success">@Html.ActionLink("Betala", "PaymentLoggin", "Home",null, null)</td>
 
-                            <label>Totalpris: @totalpris Kr</label>
-                        </td>
-                        <td class="btn .btn-sm btn-success">@Html.ActionLink("Betala", "ViewBloggPost", "Home", Model.Matratteradded, null)</td>
-                    
-
-
-
-
-                </tr>
-
-
-            
+            </tr>
 
         </tbody>
     </table>
-  
+
 }
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+}
+
+
 
 
 
