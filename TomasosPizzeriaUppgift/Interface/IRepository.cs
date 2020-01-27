@@ -12,11 +12,12 @@ namespace TomasosPizzeriaUppgift.Interface
         Kund GetById(int id);
         MenuPage GetMenuInfo();
         void SaveUser(Kund user);
-        Kund GetUuserId(Kund customer);
+        Kund GetUserId(Kund customer);
         Matratt GetMatratterToCustomerbasket(int id);
         void SaveOrder(List<Matratt> matratter, int userid);
         int GetTotalPayment(List<Matratt> matratter);
 
         void SaveBestallningMatratter(List<Matratt> matratter);
+        void UpdateUser(Kund user, int userid);
     }
 }

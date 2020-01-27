@@ -70,6 +70,23 @@ namespace TomasosPizzeriaUppgift.Controllers
             var customer = Services.Services.Instance.GetById(id);
             return View(customer);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateUser(Kund user)
+        {
+            if (ModelState.IsValid)
+            {
+                ModelState.Clear();
+                var id = GetCustomerCache();
+                Services.Services.Instance.UpdateUser(user,id);
+                return RedirectToAction("CustomerInfoPage");
+            }
+            else
+            {
+                return View(nameof(CustomerInfoPage));
+            }
+        }
         public IActionResult LoginPage()
         {
             ViewBag.Message = "Var vänlig logga in";
@@ -79,7 +96,7 @@ namespace TomasosPizzeriaUppgift.Controllers
         public IActionResult UserLogginValidation(Kund customer)
         {
 
-            var kund = Services.Services.Instance.GetUuserId(customer);
+            var kund = Services.Services.Instance.GetUserId(customer);
             if (kund != null)
             {
                 SetCustomerCache(kund);
@@ -114,7 +131,7 @@ namespace TomasosPizzeriaUppgift.Controllers
         [HttpPost]
         public ActionResult PaymentLogginValidation(Kund customer)
         {
-            var cust = Services.Services.Instance.GetUuserId(customer);
+            var cust = Services.Services.Instance.GetUserId(customer);
             var cacheid = GetCustomerCache();
             if(cacheid == cust.KundId)
             {
@@ -148,6 +165,7 @@ namespace TomasosPizzeriaUppgift.Controllers
                 matratteradded = JsonConvert.DeserializeObject<List<Matratt>>(jsonget);
             }
             Services.Services.Instance.UserPay(matratteradded, userid);
+            ResetCookie();
             return View();
         }
 
@@ -187,13 +205,20 @@ namespace TomasosPizzeriaUppgift.Controllers
         {
             string json = JsonConvert.SerializeObject(matratteradded, Formatting.Indented);
             CookieOptions options = new CookieOptions();
-            options.Expires = DateTime.Now.AddMinutes(1);
+            options.Expires = DateTime.Now.AddMinutes(10);
             options.HttpOnly = true;
             Response.Cookies.Append("cookie_matratter", json, options);
 
             var menumodel = Services.Services.Instance.GetMenuInfo();
             menumodel.Matratteradded = matratteradded;
             return menumodel;
+        }
+        public void ResetCookie()
+        {
+            foreach (var cookieKey in Request.Cookies.Keys)
+            {
+                Response.Cookies.Delete(cookieKey);
+            }
         }
 
 

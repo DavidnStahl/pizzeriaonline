@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using TomasosPizzeriaUppgift.Interface;
 using TomasosPizzeriaUppgift.ViewModels;
 
+
 namespace TomasosPizzeriaUppgift.Models.Repository
 {
     public class DBRepository : IRepository
@@ -41,7 +42,7 @@ namespace TomasosPizzeriaUppgift.Models.Repository
                 db.SaveChanges();
             }
         }
-        public Kund GetUuserId(Kund customer)
+        public Kund GetUserId(Kund customer)
         {
             var user = new Kund();
             using (TomasosContext db = new TomasosContext())
@@ -86,48 +87,41 @@ namespace TomasosPizzeriaUppgift.Models.Repository
 
         public void SaveBestallningMatratter(List<Matratt> matratter)
         {
-            var result = matratter.GroupBy(item => item)
-                      .Select(item => new
-                      {
-                          Name = item.Key,
-                          Count = item.Count()
-                      })
-                      .ToList();
-
             
+            var bestallningsmatrattlista = new List<BestallningMatratt>();
+            var id = 0;
+            var first = 0;
+            var count = 0;
+            var nymatratter = matratter.OrderBy(r => r.MatrattNamn).ToList();
             using (TomasosContext db = new TomasosContext())
             {
                 var listbestallning = db.Bestallning.OrderByDescending(r => r.BestallningDatum).ToList();
-                var bestallningsmatrattlista = new List<BestallningMatratt>();
-                var id = 0;
-                var first = 0;
-                var count = 0;
-                matratter.OrderBy(r => r.MatrattNamn).ToList();
-                var best = new BestallningMatratt();
-                for(var i = 0; i < matratter.Count; i++)
+                for (var i = 0; i < nymatratter.Count; i++)
                 {
                     
-                    if(id != matratter[i].MatrattId)
+                    if(id != nymatratter[i].MatrattId)
                     {
                         first++;
-                        id = matratter[i].MatrattId;
+                        var best = new BestallningMatratt();
+                        id = nymatratter[i].MatrattId;
                         best.BestallningId = listbestallning[0].BestallningId;
-                        best.MatrattId = matratter[i].MatrattId;
+                        best.MatrattId = nymatratter[i].MatrattId;
                         best.Antal = 1;
                         bestallningsmatrattlista.Add(best);
 
                     }
-                    else if(id == matratter[i].MatrattId)
+                    else if(id == nymatratter[i].MatrattId)
                     {
                         count = first - 1;
                         bestallningsmatrattlista[count].Antal++;
 
-                    }
-
-                    
+                    }   
                 }
-                db.AddRange(bestallningsmatrattlista);
-                db.SaveChanges();
+                foreach (var item in bestallningsmatrattlista)
+                {
+                    db.Add(item);
+                    db.SaveChanges();
+                }
             }
         }
 
@@ -139,6 +133,25 @@ namespace TomasosPizzeriaUppgift.Models.Repository
                 totalmoney += matratt.Pris;
             }
             return totalmoney;
+        }
+
+        public void UpdateUser(Kund user, int customerid)
+        {
+            using (TomasosContext db = new TomasosContext())
+            {
+                var customer = GetById(customerid);
+
+                customer.Namn = user.Namn;
+                customer.Gatuadress = user.Gatuadress;
+                customer.Postnr = user.Postnr;
+                customer.Postort = user.Postort;
+                customer.Email = user.Email;
+                customer.Telefon = user.Telefon;
+                customer.AnvandarNamn = user.AnvandarNamn;
+                customer.Losenord = user.Losenord;
+                db.Kund.Update(customer);
+                db.SaveChanges();
+            }
         }
     }
 

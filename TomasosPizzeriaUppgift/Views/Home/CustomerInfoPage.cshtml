@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
 <link href="~/css/registerPage.css" rel="stylesheet" type="text/css" asp-append-version="true" />
 <div class="container">
-    <form id="signup" asp-controller="Home" asp-action="RegisterUser" method="post">
+    <form id="signup" asp-controller="Home" asp-action="UpdateUser" method="post">
 
         <div class="header">
 
@@ -22,20 +22,20 @@
             <input type="text" value="@Model.Gatuadress" maxlength="50" asp-for="@Model.Gatuadress" />
 
             <span asp-validation-for="@Model.Postnr"></span>
-            <input type="text" valuer="@Model.Postnr" maxlength="20" asp-for="@Model.Postnr" />
+            <input type="text" value="@Model.Postnr" maxlength="20" asp-for="@Model.Postnr" />
 
             <span asp-validation-for="@Model.Postort"></span>
-            <input type="text" valuer="@Model.Postort" maxlength="100" asp-for="@Model.Postort" />
+            <input type="text" value="@Model.Postort" maxlength="100" asp-for="@Model.Postort" />
 
-            <input type="text" valuer="@Model.Email" maxlength="50" asp-for="@Model.Email" />
+            <input type="text" value="@Model.Email" placeholder="Email (Optional)" maxlength="50" asp-for="@Model.Email" />
 
-            <input type="text" valuer="@Model.Telefon" maxlength="50" asp-for="@Model.Telefon" />
+            <input type="text" value="@Model.Telefon" placeholder="Telefon (Optional)" maxlength="50" asp-for="@Model.Telefon" />
 
             <span asp-validation-for="@Model.AnvandarNamn"></span>
-            <input type="text" valuer="@Model.AnvandarNamn" maxlength="20" asp-for="@Model.AnvandarNamn" />
+            <input type="text" value="@Model.AnvandarNamn" maxlength="20" asp-for="@Model.AnvandarNamn" />
 
             <span asp-validation-for="@Model.Losenord"></span>
-            <input type="text" valuer="@Model.Losenord" maxlength="20" asp-for="@Model.Losenord" />
+            <input type="text" value="@Model.Losenord" maxlength="20" asp-for="@Model.Losenord" />
 
             <input id="submit" type="submit" value="Uppdatera" />
 

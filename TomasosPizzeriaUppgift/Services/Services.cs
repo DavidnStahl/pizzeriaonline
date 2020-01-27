@@ -15,7 +15,7 @@ using TomasosPizzeriaUppgift.Models.Repository;
 
 namespace TomasosPizzeriaUppgift.Services
 {
-    public class Services : Controller
+    public class Services
     {
         private static Services instance = null;
         private static readonly Object padlock = new Object();
@@ -47,9 +47,9 @@ namespace TomasosPizzeriaUppgift.Services
        
        
 
-        public Kund GetUuserId(Kund customer)
+        public Kund GetUserId(Kund customer)
         {
-            return  _repository.GetUuserId(customer);
+            return  _repository.GetUserId(customer);
             
 
         }
@@ -81,6 +81,10 @@ namespace TomasosPizzeriaUppgift.Services
             _repository.SaveOrder(matratter, userid);
 
         } 
+        public void UpdateUser(Kund user, int userid)
+        {
+            _repository.UpdateUser(user, userid);
+        }
 
     }
 }
