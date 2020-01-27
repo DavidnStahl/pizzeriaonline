@@ -40,17 +40,18 @@ namespace TomasosPizzeriaUppgift.Services
             }
         }
 
+
         public Services()
         {
         }
 
-       
-       
+
+
 
         public Kund GetUserId(Kund customer)
         {
-            return  _repository.GetUserId(customer);
-            
+            return _repository.GetUserId(customer);
+
 
         }
 
@@ -60,12 +61,12 @@ namespace TomasosPizzeriaUppgift.Services
         }
         public Kund GetById(int id)
         {
-            return  _repository.GetById(id);
+            return _repository.GetById(id);
         }
 
         public MenuPage GetMenuInfo()
         {
-            return _repository.GetMenuInfo();;
+            return _repository.GetMenuInfo(); ;
         }
         public void SaveUser(Kund user)
         {
@@ -76,15 +77,24 @@ namespace TomasosPizzeriaUppgift.Services
         {
             return _repository.GetMatratterToCustomerbasket(id);
         }
-        public void UserPay(List<Matratt> matratter,int userid)
+        public void UserPay(List<Matratt> matratter, int userid)
         {
             _repository.SaveOrder(matratter, userid);
 
-        } 
+        }
         public void UpdateUser(Kund user, int userid)
         {
             _repository.UpdateUser(user, userid);
         }
+        public List<MatrattTyp> GetMatratttyper()
+        {
+            return _repository.GetMatrattTyper();
+        }
+        public Kund CheckUserName(Kund customer)
+        {
+            return _repository.CheckUserName(customer);
+        }
+
 
     }
 }

@@ -153,6 +153,27 @@ namespace TomasosPizzeriaUppgift.Models.Repository
                 db.SaveChanges();
             }
         }
+
+        public List<MatrattTyp> GetMatrattTyper()
+        {
+            var matratttyper = new List<MatrattTyp>();
+            using (TomasosContext db = new TomasosContext())
+            {
+                matratttyper = db.MatrattTyp.ToList();
+            }
+            return matratttyper;
+        }
+
+        public Kund CheckUserName(Kund customer)
+        {
+            var kund = new Kund();
+            using (TomasosContext db = new TomasosContext())
+            {
+                kund = db.Kund.FirstOrDefault(r => r.AnvandarNamn == customer.AnvandarNamn);
+            }
+            return kund;
+        }
+        
     }
 
 }

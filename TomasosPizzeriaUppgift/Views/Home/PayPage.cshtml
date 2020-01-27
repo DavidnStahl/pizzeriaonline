@@ -25,7 +25,7 @@
                 <table id="updatetable" class="table table-borderless table-css">
                     <thead>
                         <tr>
-
+                            <th scope="col">Maträtt typ</th>
                             <th scope="col">Maträtt</th>
                             <th scope="col">Pris</th>
                         </tr>
@@ -37,16 +37,17 @@
 
                             totalpris += item.Pris;
 
-                            <tr>
-
+                        <tr>
+                            @if (item.Pris != 0)
+                            {
+                                <td>@Model.mattratttyper[@item.MatrattTyp - 1].Beskrivning</td>
                                 <td>@item.MatrattNamn</td>
-                                @if (item.Pris != 0)
-                                {
-                                    <td>@item.Pris</td>
 
-                                }
+                                <td>@item.Pris</td>
 
-                            </tr>
+                            }
+
+                        </tr>
                             itemcount++;
                         }
 

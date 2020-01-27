@@ -5,12 +5,13 @@
     var itemcount = 0;
 
 
+
 }
 
 <table id="updatetable" class="table table-borderless table-css">
     <thead>
         <tr>
-
+            <th scope="col">Maträtt typ</th>
             <th scope="col">Maträtt</th>
             <th scope="col">Pris</th>
         </tr>
@@ -19,21 +20,22 @@
         @foreach (var item in Model.Matratteradded)
         {
 
-
+            
             totalpris += item.Pris;
            
-            <tr>
-
+        <tr>
+            @if (item.Pris != 0)
+            {
+                <td>@Model.mattratttyper[@item.MatrattTyp - 1].Beskrivning</td>
                 <td>@item.MatrattNamn</td>
-                @if (item.Pris != 0)
-                {
-                    <td>@item.Pris</td>
-                    <td type="button" class="btn btn-danger text-white">
-                        @Html.ActionLink("Remove", "RemoveItemCustomerBasket", "Home", new { id = item.MatrattId, count = itemcount }, null)
-                    </td>
-                }
 
-            </tr>
+                <td>@item.Pris</td>
+                <td type="button" class="btn btn-danger text-white">
+                    @Html.ActionLink("Remove", "RemoveItemCustomerBasket", "Home", new { id = item.MatrattId, count = itemcount }, null)
+                </td>
+            }
+
+        </tr>
             itemcount++;
 
         }

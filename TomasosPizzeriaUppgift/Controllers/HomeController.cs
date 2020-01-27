@@ -29,6 +29,7 @@ namespace TomasosPizzeriaUppgift.Controllers
                 var matratteradded = GetMatratterCacheList(id, "2");
                 matratteradded.Add(model.matratt);
                 model.Matratteradded = matratteradded;
+                model.mattratttyper = Services.Services.Instance.GetMatratttyper();
                 return View(model);
             }
             else
@@ -40,13 +41,15 @@ namespace TomasosPizzeriaUppgift.Controllers
         }
         public IActionResult RegisterPage()
         {
+            ViewBag.Message = "Fyll i personlig information";
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult RegisterUser(Kund user)
         {
-            if (ModelState.IsValid)
+            var kund = Services.Services.Instance.CheckUserName(user);
+            if (ModelState.IsValid && kund.AnvandarNamn == null)
             {
                 Services.Services.Instance.SaveUser(user);
                 ModelState.Clear();
@@ -54,6 +57,7 @@ namespace TomasosPizzeriaUppgift.Controllers
             }
             else
             {
+                ViewBag.Message = "Användarnamn upptaget";
                 return View(nameof(RegisterPage));
             }
         }
@@ -68,6 +72,7 @@ namespace TomasosPizzeriaUppgift.Controllers
                 return RedirectToAction("LoginPage");
             }
             var customer = Services.Services.Instance.GetById(id);
+            ViewBag.Message = "Din personliga information";
             return View(customer);
         }
 
@@ -75,15 +80,19 @@ namespace TomasosPizzeriaUppgift.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult UpdateUser(Kund user)
         {
+            var kund = Services.Services.Instance.CheckUserName(user);
+            var id = GetCustomerCache();
+            var customer = Services.Services.Instance.GetById(id);
+
             if (ModelState.IsValid)
             {
                 ModelState.Clear();
-                var id = GetCustomerCache();
                 Services.Services.Instance.UpdateUser(user,id);
                 return RedirectToAction("CustomerInfoPage");
             }
             else
             {
+                ViewBag.Message = "Användarnamn upptaget";
                 return View(nameof(CustomerInfoPage));
             }
         }
@@ -126,6 +135,7 @@ namespace TomasosPizzeriaUppgift.Controllers
         {
             var matratteradded = GetMatratterCacheList(id,"1");
             var menumodel = SetMatratterCacheList(matratteradded);
+            menumodel.mattratttyper = Services.Services.Instance.GetMatratttyper();
             return PartialView("MenuPage", menumodel);
         }
         public ActionResult PaymentLoggin()
@@ -158,6 +168,7 @@ namespace TomasosPizzeriaUppgift.Controllers
             }
             var model = new MenuPage();
             model.Matratteradded = matratteradded;
+            model.mattratttyper = Services.Services.Instance.GetMatratttyper();
             return View(model);
         }
         public ActionResult PayUser()
@@ -216,6 +227,7 @@ namespace TomasosPizzeriaUppgift.Controllers
 
             var menumodel = Services.Services.Instance.GetMenuInfo();
             menumodel.Matratteradded = matratteradded;
+
             return menumodel;
         }
         public void ResetCookie()
