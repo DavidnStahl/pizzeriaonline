@@ -92,6 +92,11 @@ namespace TomasosPizzeriaUppgift.Controllers
             ViewBag.Message = "Var vänlig logga in";
             return View();
         }
+        public IActionResult LogOut()
+        {
+            ResetCookie();
+            return RedirectToAction("LoginPage");
+        }
         [HttpPost]
         public IActionResult UserLogginValidation(Kund customer)
         {
@@ -125,7 +130,7 @@ namespace TomasosPizzeriaUppgift.Controllers
         }
         public ActionResult PaymentLoggin()
         {
-            ViewBag.Message = "För att betala logga in";
+            ViewBag.Message = "Logga in, för att betala";
             return View();
         }
         [HttpPost]
