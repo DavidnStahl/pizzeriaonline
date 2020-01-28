@@ -8,7 +8,7 @@
 
             <h3>Kund Info</h3>
 
-            <p>@ViewBag.Message</p>
+            <p>Din personliga information</p>
 
         </div>
 
@@ -30,9 +30,17 @@
             <input type="text" value="@Model.Email" placeholder="Email (Optional)" maxlength="50" asp-for="@Model.Email" />
 
             <input type="text" value="@Model.Telefon" placeholder="Telefon (Optional)" maxlength="50" asp-for="@Model.Telefon" />
+            @if (ViewBag.Message == "Användarnamn Upptaget")
+            {
+                <span asp-validation-for="@Model.AnvandarNamn"></span>
+                <input class="wrong-password" type="text" value="@ViewBag.Message" maxlength="20" asp-for="@Model.AnvandarNamn" />
+            }
+            else
+            {
+                <span asp-validation-for="@Model.AnvandarNamn"></span>
+                <input type="text" value="@Model.AnvandarNamn" maxlength="20" asp-for="@Model.AnvandarNamn" />
+            }
 
-            <span asp-validation-for="@Model.AnvandarNamn"></span>
-            <input type="text" value="@Model.AnvandarNamn" maxlength="20" asp-for="@Model.AnvandarNamn" />
 
             <span asp-validation-for="@Model.Losenord"></span>
             <input type="text" value="@Model.Losenord" maxlength="20" asp-for="@Model.Losenord" />

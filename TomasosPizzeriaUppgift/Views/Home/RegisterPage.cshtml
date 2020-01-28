@@ -10,7 +10,7 @@
 
             <h3>Registrera dig</h3>
 
-            <p>@ViewBag.Message</p>
+            <p>Fyll i din personliga information</p>
 
         </div>
 
@@ -29,8 +29,16 @@
             <input type="text" placeholder="Email (Optional)" maxlength="50" asp-for="@Model.Email" />
 
             <input type="text" placeholder="Telefon (Optional)" maxlength="50" asp-for="@Model.Telefon" />
-            <span asp-validation-for="@Model.AnvandarNamn"></span>
-            <input type="text"  placeholder="*Användarnamn" maxlength="20" asp-for="@Model.AnvandarNamn" />
+            @if (ViewBag.Message == "Användarnamn Upptaget")
+            {
+                <span asp-validation-for="@Model.AnvandarNamn"></span>
+                <input class="wrong-password" type="text" value="@ViewBag.Message" maxlength="20" asp-for="@Model.AnvandarNamn" />
+            }
+            else
+            {
+                <span asp-validation-for="@Model.AnvandarNamn"></span>
+                <input type="text" placeholder="*Användarnamn" maxlength="20" asp-for="@Model.AnvandarNamn" />
+            }
             <span asp-validation-for="@Model.Losenord"></span>
             <input type="password" placeholder="*Lösenord" maxlength="20" asp-for="@Model.Losenord" />
 

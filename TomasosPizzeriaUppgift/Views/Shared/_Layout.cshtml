@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -17,11 +19,27 @@
 
         <ul>
             <li class="left-navigation"><a asp-area="" asp-controller="Home" asp-action="HomePage">Tomasos Pizzeria</a></li>
-            <li class="left-navigation"><a asp-area="" asp-controller="Home" asp-action="MenuPage">Meny</a></li>
+            @if (ViewBag.Layout == "Inloggad")
+            {
+                <li class="left-navigation"><a asp-area="" asp-controller="Home" asp-action="MenuPage">Meny</a></li>
+            }
+
             <li class="right-navigation"><a asp-area="" asp-controller="Home" asp-action="RegisterPage">Registrera</a></li>
-            <li class="right-navigation"><a asp-area="" asp-controller="Home" asp-action="LogOut">Logga ut</a></li>
-            <li class="right-navigation"><a asp-area="" asp-controller="Home" asp-action="LoginPage">Logga in</a></li>
-            <li class="right-navigation"><a asp-area="" asp-controller="Home" asp-action="CustomerInfoPage">Kund Info</a></li>
+            @if (ViewBag.Layout == "Inloggad")
+            {
+                <li class="right-navigation"><a asp-area="" asp-controller="Home" asp-action="LogOut">Logga ut</a></li>
+            }
+
+            @if (ViewBag.Layout != "Inloggad")
+            {
+               <li class="right-navigation"><a asp-area="" asp-controller="Home" asp-action="LoginPage">Logga in</a></li>
+            }
+            
+            @if (ViewBag.layout == "Inloggad")
+            {
+                <li class="right-navigation"><a asp-area="" asp-controller="Home" asp-action="CustomerInfoPage">Kund Info</a></li>
+            }
+
         </ul>
     </nav>
     <div class="container container-views">
@@ -37,7 +55,7 @@
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.4.min.js" asp-append-version="true"></script>
     <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.17.0/jquery.validate.min.js" asp-append-version="true"></script>
     <script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js" asp-append-version="true"></script>
-    
+
     @RenderSection("Scripts", required: false)
 </body>
 </html>

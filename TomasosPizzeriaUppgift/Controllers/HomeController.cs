@@ -11,25 +11,27 @@ using TomasosPizzeriaUppgift.Services;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
+
+
 namespace TomasosPizzeriaUppgift.Controllers
 {
     public class HomeController : Controller
     {
         public IActionResult HomePage()
         {
+            ViewBag.Layout = Services.Services.Instance.CheckIfInlogged(Request);
             return View();
         }
 
         public IActionResult MenuPage()
         {
+            ViewBag.Layout = Services.Services.Instance.CheckIfInlogged(Request);
             var model = Services.Services.Instance.GetMenuInfo();
-            var id = Convert.ToInt32(Request.Cookies["cookie_customer"]);
+            var id = Services.Services.Instance.GetCustomerIDCache(Request);
             if (id != 0)
             {
-                var matratteradded = GetMatratterCacheList(id, "2");
-                matratteradded.Add(model.matratt);
-                model.Matratteradded = matratteradded;
-                model.mattratttyper = Services.Services.Instance.GetMatratttyper();
+                
+                model = Services.Services.Instance.MenuPageData(id,Request,Response);
                 return View(model);
             }
             else
@@ -41,7 +43,8 @@ namespace TomasosPizzeriaUppgift.Controllers
         }
         public IActionResult RegisterPage()
         {
-            ViewBag.Message = "Fyll i personlig information";
+            ViewBag.Layout = Services.Services.Instance.CheckIfInlogged(Request);
+            ViewBag.Message = "Din personliga information";
             return View();
         }
         [HttpPost]
@@ -49,7 +52,7 @@ namespace TomasosPizzeriaUppgift.Controllers
         public IActionResult RegisterUser(Kund user)
         {
             var kund = Services.Services.Instance.CheckUserName(user);
-            if (ModelState.IsValid && kund.AnvandarNamn == null)
+            if (ModelState.IsValid && kund == null)
             {
                 Services.Services.Instance.SaveUser(user);
                 ModelState.Clear();
@@ -57,7 +60,7 @@ namespace TomasosPizzeriaUppgift.Controllers
             }
             else
             {
-                ViewBag.Message = "Användarnamn upptaget";
+                ViewBag.Message = "Användarnamn Upptaget";
                 return View(nameof(RegisterPage));
             }
         }
@@ -65,8 +68,8 @@ namespace TomasosPizzeriaUppgift.Controllers
        
         public ActionResult CustomerInfoPage()
         {
-
-            var id = GetCustomerCache();
+            ViewBag.Layout = Services.Services.Instance.CheckIfInlogged(Request);
+            var id = Services.Services.Instance.GetCustomerIDCache(Request);
             if (id == 0)
             {
                 return RedirectToAction("LoginPage");
@@ -80,15 +83,20 @@ namespace TomasosPizzeriaUppgift.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult UpdateUser(Kund user)
         {
-            var kund = Services.Services.Instance.CheckUserName(user);
-            var id = GetCustomerCache();
-            var customer = Services.Services.Instance.GetById(id);
-
-            if (ModelState.IsValid)
+            ViewBag.Layout = Services.Services.Instance.CheckIfInlogged(Request);
+            var id = Services.Services.Instance.GetCustomerIDCache(Request);
+            var valid = Services.Services.Instance.CheckUserNameIsValid(user,Request,Response);
+            if (ModelState.IsValid && valid == true)
             {               
                 ModelState.Clear();
                 Services.Services.Instance.UpdateUser(user, id);
                 return RedirectToAction("CustomerInfoPage");
+            }
+            else if(ModelState.IsValid && valid == false)
+            {
+                ViewBag.Message = "Användarnamn Upptaget";
+                var customer = Services.Services.Instance.GetById(id);
+                return View(nameof(CustomerInfoPage),customer);
             }
             else
             {
@@ -97,12 +105,13 @@ namespace TomasosPizzeriaUppgift.Controllers
         }
         public IActionResult LoginPage()
         {
+            ViewBag.Layout = Services.Services.Instance.CheckIfInlogged(Request);
             ViewBag.Message = "Var vänlig logga in";
             return View();
         }
         public IActionResult LogOut()
         {
-            ResetCookie();
+            Services.Services.Instance.ResetCookie(Request, Response);
             return RedirectToAction("LoginPage");
         }
         [HttpPost]
@@ -112,8 +121,8 @@ namespace TomasosPizzeriaUppgift.Controllers
             var kund = Services.Services.Instance.GetUserId(customer);
             if (kund != null)
             {
-                SetCustomerCache(kund);
-                return RedirectToAction("MenuPage");
+                Services.Services.Instance.SetCustomerCache(kund, Request, Response);
+                return RedirectToAction("HomePage");
             }
             else
             {
@@ -124,30 +133,30 @@ namespace TomasosPizzeriaUppgift.Controllers
 
         public ActionResult RemoveItemCustomerBasket(int id, int count)
         {
-            var matratteradded = GetMatratterCacheList(id,"2");
-            matratteradded.RemoveAt(count);
-            var menumodel = SetMatratterCacheList(matratteradded);
-            return PartialView("MenuPage", menumodel); 
+            ViewBag.Layout = Services.Services.Instance.CheckIfInlogged(Request);
+            var model = Services.Services.Instance.RemoveItemCustomerBasket(id,count, Request, Response);
+            return PartialView("MenuPage", model); 
         }
 
         public ActionResult CustomerBasket(int id)
         {
-            var matratteradded = GetMatratterCacheList(id,"1");
-            var menumodel = SetMatratterCacheList(matratteradded);
-            menumodel.mattratttyper = Services.Services.Instance.GetMatratttyper();
-            return PartialView("MenuPage", menumodel);
+            ViewBag.Layout = Services.Services.Instance.CheckIfInlogged(Request);
+            var model = Services.Services.Instance.CustomerBasket(id, Request, Response);
+            return PartialView("MenuPage", model);
         }
         public ActionResult PaymentLoggin()
         {
             ViewBag.Message = "Logga in, för att betala";
+            ViewBag.Layout = Services.Services.Instance.CheckIfInlogged(Request);
             return View();
         }
         [HttpPost]
         public ActionResult PaymentLogginValidation(Kund customer)
         {
             var cust = Services.Services.Instance.GetUserId(customer);
-            var cacheid = GetCustomerCache();
-            if(cacheid == cust.KundId)
+            var cacheid = Services.Services.Instance.GetCustomerIDCache(Request);
+            ViewBag.Layout = Services.Services.Instance.CheckIfInlogged(Request);
+            if (cacheid == cust.KundId)
             {
                 return RedirectToAction("PayPage");
             }
@@ -159,84 +168,15 @@ namespace TomasosPizzeriaUppgift.Controllers
         }
         public ActionResult PayPage()
         {
-            var jsonget = Request.Cookies["cookie_matratter"];
-            var matratteradded = new List<Matratt>();
-            if (jsonget != null)
-            {
-                matratteradded = JsonConvert.DeserializeObject<List<Matratt>>(jsonget);
-            }
-            var model = new MenuPage();
-            model.Matratteradded = matratteradded;
-            model.mattratttyper = Services.Services.Instance.GetMatratttyper();
+            var model = Services.Services.Instance.PayPage(Request, Response);
+            ViewBag.Layout = Services.Services.Instance.CheckIfInlogged(Request);
             return View(model);
         }
         public ActionResult PayUser()
         {
-            var userid = GetCustomerCache();
-            var jsonget = Request.Cookies["cookie_matratter"];
-            var matratteradded = new List<Matratt>();
-            if (jsonget != null)
-            {
-                matratteradded = JsonConvert.DeserializeObject<List<Matratt>>(jsonget);
-            }
-            Services.Services.Instance.UserPay(matratteradded, userid);
-            ResetCookie();
+            ViewBag.Layout = Services.Services.Instance.CheckIfInlogged(Request);
+            Services.Services.Instance.PayUser(Request, Response);
             return View();
         }
-
-
-        public int GetCustomerCache()
-        {
-            var id = Convert.ToInt32(Request.Cookies["cookie_customer"]);
-            return id;
-        }
-        public void SetCustomerCache(Kund kund)
-        {
-            foreach (var cookieKey in Request.Cookies.Keys)
-            {
-                Response.Cookies.Delete(cookieKey);
-            }
-            CookieOptions options = new CookieOptions();
-            options.Expires = DateTime.Now.AddMinutes(10);
-            options.HttpOnly = true;
-            Response.Cookies.Append("cookie_customer", kund.KundId.ToString(), options);
-        }
-        public List<Matratt> GetMatratterCacheList(int id, string options)
-        {
-            var model = Services.Services.Instance.GetMatratterById(id);
-            var jsonget = Request.Cookies["cookie_matratter"];
-            var matratteradded = new List<Matratt>();
-            if (jsonget != null)
-            {
-                matratteradded = JsonConvert.DeserializeObject<List<Matratt>>(jsonget);
-            }
-            if(options == "1")
-            {
-                matratteradded.Add(model);
-            }
-            return matratteradded;
-        }
-        public MenuPage SetMatratterCacheList(List<Matratt> matratteradded)
-        {
-            string json = JsonConvert.SerializeObject(matratteradded, Formatting.Indented);
-            CookieOptions options = new CookieOptions();
-            options.Expires = DateTime.Now.AddMinutes(10);
-            options.HttpOnly = true;
-            Response.Cookies.Append("cookie_matratter", json, options);
-
-            var menumodel = Services.Services.Instance.GetMenuInfo();
-            menumodel.Matratteradded = matratteradded;
-
-            return menumodel;
-        }
-        public void ResetCookie()
-        {
-            foreach (var cookieKey in Request.Cookies.Keys)
-            {
-                Response.Cookies.Delete(cookieKey);
-            }
-        }
-
-
     }
 }
