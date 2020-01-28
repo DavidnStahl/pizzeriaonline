@@ -85,9 +85,9 @@ namespace TomasosPizzeriaUppgift.Controllers
             var customer = Services.Services.Instance.GetById(id);
 
             if (ModelState.IsValid)
-            {
+            {               
                 ModelState.Clear();
-                Services.Services.Instance.UpdateUser(user,id);
+                Services.Services.Instance.UpdateUser(user, id);
                 return RedirectToAction("CustomerInfoPage");
             }
             else
