@@ -24,19 +24,15 @@
                 <li class="left-navigation"><a asp-area="" asp-controller="Home" asp-action="MenuPage">Meny</a></li>
             }
 
-            <li class="right-navigation"><a asp-area="" asp-controller="Home" asp-action="RegisterPage">Registrera</a></li>
-            @if (ViewBag.Layout == "Inloggad")
-            {
-                <li class="right-navigation"><a asp-area="" asp-controller="Home" asp-action="LogOut">Logga ut</a></li>
-            }
-
             @if (ViewBag.Layout != "Inloggad")
             {
-               <li class="right-navigation"><a asp-area="" asp-controller="Home" asp-action="LoginPage">Logga in</a></li>
+                <li class="right-navigation"><a asp-area="" asp-controller="Home" asp-action="RegisterPage">Registrera</a></li>
+                <li class="right-navigation"><a asp-area="" asp-controller="Home" asp-action="LoginPage">Logga in</a></li>
             }
-            
+
             @if (ViewBag.layout == "Inloggad")
             {
+                <li class="right-navigation"><a asp-area="" asp-controller="Home" asp-action="LogOut">Logga ut</a></li>
                 <li class="right-navigation"><a asp-area="" asp-controller="Home" asp-action="CustomerInfoPage">Kund Info</a></li>
             }
 
